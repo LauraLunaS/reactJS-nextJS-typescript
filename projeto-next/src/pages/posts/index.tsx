@@ -30,5 +30,6 @@ interface Post {
       props: {
         posts,
       },
+      revalidate: 5,
     };
   };
