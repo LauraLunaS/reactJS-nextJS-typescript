@@ -1,5 +1,9 @@
 import SEO from '@/components/SEO';
+import Prismic from '@prismicio/client';
+import Link from 'next/link';
 import { GetStaticProps } from 'next';
+import { getPrismicClient } from '../../services/prismic';
+import styles from './posts.module.scss';
 
 interface Post {
     id: string;
@@ -10,28 +14,40 @@ interface Post {
     posts: Post[];
   }
   
-  export default function Posts({ posts }: PostsProps) {
+  export default function Posts() {
     return (
-      <div>
+      <>
         <SEO title='Posts' />
-        <h1>Listagem de Posts</h1>
-        <ul>
-          {posts.map(post => (
-            <li key={post.id}>{post.title}</li>
-          ))}
-        </ul>
-      </div>
+        
+        <main className={styles.container}>
+        <div className={styles.posts}>
+          <Link href="#"  legacyBehavior >
+            <a>
+                <time>25 de dezembro de 2021</time>
+                <strong>Titulo</strong>
+                <p>Paragrafo</p>
+              </a>
+          </Link>
+        </div>
+      </main>
+      </>
     );
   }
   
-  export const getStaticProps: GetStaticProps<PostsProps> = async () => {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-    const posts = await response.json();
+  export const getStaticProps: GetStaticProps = async () => {
+    const prismic = getPrismicClient();
+  
+    const response = await prismic.query(
+      [Prismic.predicates.at('document.type', 'post')],
+      {
+        fetch: ['post.title', 'post.content'],
+      },
+    );
+  
+    console.log(response);
   
     return {
-      props: {
-        posts,
-      },
-      revalidate: 5,
+      props: {},
+      revalidate: 60 * 60 * 12, // 12 horas
     };
-  };
+  }
