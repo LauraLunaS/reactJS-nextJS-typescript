@@ -1,33 +1,38 @@
 import SEO from '@/components/SEO';
 import Prismic from '@prismicio/client';
+import { RichText } from 'prismic-dom';
 import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import { getPrismicClient } from '../../services/prismic';
 import styles from './posts.module.scss';
 
 interface Post {
-    id: string;
+    slug: string;
     title: string;
+    excerpt: string;
+    updatedAt: string;
   }
 
   interface PostsProps {
     posts: Post[];
   }
   
-  export default function Posts() {
+  export default function Posts({ posts }: PostsProps) {
     return (
       <>
         <SEO title='Posts' />
         
         <main className={styles.container}>
         <div className={styles.posts}>
-          <Link href="#"  legacyBehavior >
-            <a>
-                <time>25 de dezembro de 2021</time>
-                <strong>Titulo</strong>
-                <p>Paragrafo</p>
+        {posts.map(post => (
+            <Link href="#" key={post.slug}>
+              <a>
+                <time>{post.updatedAt}</time>
+                <strong>{post.title}</strong>
+                <p>{post.excerpt}</p>
               </a>
-          </Link>
+            </Link>
+          ))}
         </div>
       </main>
       </>
@@ -44,10 +49,28 @@ interface Post {
       },
     );
   
-    console.log(response);
+    const posts = response.results.map(posts => {
+      return {
+        slug: posts.uid,
+        title: RichText.asText(post.data.title),
+        excerpt:
+          post.data.content.find(content => content.type === 'paragraph')?.text ??
+          '',
+        updatedAt: new Date(post.last_publication_date).toLocaleDateString(
+          'pt-BR',
+          {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          },
+        ),
+      };
+    });
   
     return {
-      props: {},
+      props: {
+        posts,
+      },
       revalidate: 60 * 60 * 12, // 12 horas
     };
   }
