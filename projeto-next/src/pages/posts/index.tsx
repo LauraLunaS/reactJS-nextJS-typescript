@@ -26,6 +26,7 @@ interface Post {
         <div className={styles.posts}>
         {posts.map(post => (
             <Link href="#" key={post.slug}>
+            <Link href={`/posts/${post.slug}`} key={post.slug}></Link>
               <a>
                 <time>{post.updatedAt}</time>
                 <strong>{post.title}</strong>
