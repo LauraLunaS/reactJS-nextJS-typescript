@@ -14,7 +14,7 @@ jest.mock('next/router', () => {
 describe('ActiveLink component', () => {
   it('renders correctly', () => {
     const { getByText } = render(
-      <ActiveLink href="/" activeClassName="active">
+      <ActiveLink legacyBehavior href="/" activeClassName="active">
         <a>Home</a>
       </ActiveLink>,
     );

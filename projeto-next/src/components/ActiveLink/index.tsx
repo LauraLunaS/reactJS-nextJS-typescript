@@ -17,7 +17,7 @@ export function ActiveLink({
   const className = asPath === otherProps.href ? activeClassName : '';
 
   return (
-    <Link {...otherProps}>
+    <Link {...otherProps} legacyBehavior>
       {cloneElement(children, {
         className,
       })}
